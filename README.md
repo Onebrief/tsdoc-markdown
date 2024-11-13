@@ -130,58 +130,60 @@ generateDocumentation({
 
 ## :toolbox: Functions
 
-- [buildDocumentation](#gear-builddocumentation)
-- [documentationToMarkdown](#gear-documentationtomarkdown)
-- [generateDocumentation](#gear-generatedocumentation)
+- [buildRunner](#gear-buildrunner)
+- [useCommandRunnerCallback](#gear-usecommandrunnercallback)
+- [useRunnableCommand](#gear-userunnablecommand)
 
-### :gear: buildDocumentation
+### :gear: buildRunner
 
-Build the documentation entries for the selected sources.
+Builds a command runner for the given command name and selection.
+The built runner will have its handler property set to a function that will
+execute all available commands for the given command name.
 
-| Function             | Type                                                                                                      |
-| -------------------- | --------------------------------------------------------------------------------------------------------- |
-| `buildDocumentation` | `({ inputFiles, options }: { inputFiles: string[]; options?: BuildOptions or undefined; }) => DocEntry[]` |
-
-Parameters:
-
-- `params.inputFiles`: The list of files to scan and for which the documentation should be build.
-- `params.options`: Optional compiler options to generate the docs
-
-[:link: Source](https://github.com/peterpeterparker/tsdoc-markdown/tree/main/src/lib/docs.ts#L398)
-
-### :gear: documentationToMarkdown
-
-Convert the documentation entries to an opinionated Markdown format.
-
-| Function                  | Type                                                                                                 |
-| ------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `documentationToMarkdown` | `({ entries, options }: { entries: DocEntry[]; options?: MarkdownOptions or undefined; }) => string` |
+| Function | Type |
+| ---------- | ---------- |
+| `buildRunner` | `(name: CommandName, selection: SelectionKey[], arg: string or undefined, isReadOnlyUser: boolean) => RunnableCommandInternal` |
 
 Parameters:
 
-- `params.entries`: The entries of the documentation (functions, constants and classes).
-- `params.options`: Optional configuration to render the Markdown content. See `types.ts` for details.
+* `name`: The name of the command to build a runner for
+* `selection`: The current selection
+* `arg`: The argument to pass to the command
+* `isReadOnlyUser`: Whether the current user is read-only
 
-[:link: Source](https://github.com/peterpeterparker/tsdoc-markdown/tree/main/src/lib/markdown.ts#L277)
 
-### :gear: generateDocumentation
+### :gear: useCommandRunnerCallback
 
-Generate documentation and write output to a file.
-If the file exists, it will try to insert the docs between <!-- TSDOC_START --> and <!-- TSDOC_END --> comments.
-If these does not exist, the output file will be overwritten.
+A hook that returns a callback function that can be used to run a command.
 
-| Function                | Type                                                                                                                                                                                                           |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `generateDocumentation` | `({ inputFiles, outputFile, markdownOptions, buildOptions }: { inputFiles: string[]; outputFile: string; markdownOptions?: MarkdownOptions or undefined; buildOptions?: BuildOptions or undefined; }) => void` |
+| Function | Type |
+| ---------- | ---------- |
+| `useCommandRunnerCallback` | `(getSelection: () => SelectionKey[], isReadOnlyUser: boolean) => CommandRunner` |
 
 Parameters:
 
-- `params.inputFiles`: The list of files to scan for documentation. Absolute or relative path.
-- `params.outputFile`: The file to output the documentation in Markdown.
-- `params.markdownOptions`: Optional settings passed to the Markdown parser. See `MarkdownOptions` for details.
-- `params.buildOptions`: Options to construct the documentation tree. See `BuildOptions` for details.
+* `getSelection`: a function to retreive the current selection
+* `isReadOnlyUser`: a flag to indicate if the current user is read-only
 
-[:link: Source](https://github.com/peterpeterparker/tsdoc-markdown/tree/main/src/lib/index.ts#L26)
+
+### :gear: useRunnableCommand
+
+A hook that returns a runnable command object for the given command name and selection.
+
+| Function | Type |
+| ---------- | ---------- |
+| `useRunnableCommand` | `(currentSelection: SelectionKey[], name: CommandName, arg: string or undefined, isReadOnlyUser: boolean, selectionOverride?: SelectionKey[] or undefined) => RunnableCommand` |
+
+Parameters:
+
+* `currentSelection`: the current selection as an array
+* `name`: the name of the command
+* `arg`: an optional argument to pass to the command
+* `isReadOnlyUser`: a flag to indicate if the current user is read-only
+* `selectionOverride`: an optional override to the currentSelection
+
+
+
 
 <!-- TSDOC_END -->
 

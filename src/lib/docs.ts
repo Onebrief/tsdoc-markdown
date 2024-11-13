@@ -5,6 +5,7 @@ import type {
   Declaration,
   EnumDeclaration,
   FunctionDeclaration,
+  NamedDeclaration,
   Node,
   PropertyName,
   Signature,
@@ -15,11 +16,6 @@ import type {
   VariableStatement
 } from 'typescript';
 import {
-  ModifierFlags,
-  ModuleKind,
-  NodeFlags,
-  ScriptTarget,
-  SyntaxKind,
   createProgram,
   displayPartsToString,
   forEachChild,
@@ -27,14 +23,22 @@ import {
   isArrowFunction,
   isClassDeclaration,
   isEnumDeclaration,
+  isExportDeclaration,
   isFunctionDeclaration,
   isIdentifier,
   isInterfaceDeclaration,
   isMethodDeclaration,
   isModuleDeclaration,
+  isNamedExports,
   isPropertySignature,
   isTypeAliasDeclaration,
-  isVariableStatement
+  isVariableDeclaration,
+  isVariableStatement,
+  ModifierFlags,
+  ModuleKind,
+  NodeFlags,
+  ScriptTarget,
+  SyntaxKind
 } from 'typescript';
 import type {BuildOptions, DocEntry, DocEntryConstructor, DocEntryType} from './types';
 
@@ -112,16 +116,140 @@ const serializeClass = ({
   return details;
 };
 
-/** True if this is visible outside this file, false otherwise */
-const isNodeExportedOrPublic = (node: Node): boolean => {
-  const flags = getCombinedModifierFlags(node as Declaration);
+/** gather all exported nodes */
+function collectExportedNames(sourceFile: SourceFile): Set<string> {
+  const exportedNames = new Set<string>();
+  const declarationsByName = new Map<string, Node>();
 
+  sourceFile.forEachChild(function visit(node) {
+    if (isVariableStatement(node)) {
+      const isExported = node.modifiers?.some((mod) => mod.kind === SyntaxKind.ExportKeyword);
+      for (const decl of node.declarationList.declarations) {
+        const nameNode = decl.name;
+        if (isIdentifier(nameNode)) {
+          const name = nameNode.text;
+          declarationsByName.set(name, decl);
+          if (isExported) {
+            exportedNames.add(name);
+          }
+        }
+      }
+    } else if (
+      isFunctionDeclaration(node) ||
+      isClassDeclaration(node) ||
+      isInterfaceDeclaration(node) ||
+      isTypeAliasDeclaration(node) ||
+      isEnumDeclaration(node)
+    ) {
+      const nameNode = node.name;
+      if (nameNode && isIdentifier(nameNode)) {
+        const name = nameNode.text;
+        declarationsByName.set(name, node);
+
+        if (node.modifiers?.some((mod) => mod.kind === SyntaxKind.ExportKeyword)) {
+          exportedNames.add(name);
+        }
+      }
+    } else if (isExportDeclaration(node)) {
+      if (node.exportClause && isNamedExports(node.exportClause)) {
+        for (const specifier of node.exportClause.elements) {
+          const name = (specifier.propertyName || specifier.name).text;
+          exportedNames.add(name);
+        }
+      }
+    }
+
+    node.forEachChild(visit);
+  });
+
+  return exportedNames;
+}
+
+/** True if this is visible outside this file, false otherwise */
+// const isNodeExportedOrPublic = (node: Node, exportedNodes: Set<Node>): boolean => {
+//   const flags = getCombinedModifierFlags(node as Declaration);
+
+//   // if (
+//   //   (flags & ModifierFlags.Export) !== 0 ||
+//   //   (flags & ModifierFlags.Public) !== 0 ||
+//   //   (isClassDeclaration(node.parent) && [ModifierFlags.None, ModifierFlags.Static].includes(flags))
+//   // ) {
+//   //   return true;
+//   // }
+
+//   if (exportedNodes.has(node)) {
+//     console.log('Node INDEED exported', node.getText());
+//     return true;
+//   }
+
+//   console.log('Node NOT exported', node.getText());
+//   return false;
+// };
+
+function isNodeExportedOrPublic(node: Node, exportedNames: Set<string>): boolean {
+  let name: string | undefined;
+  console.log('CHECKING', node.getText());
+  // Handle VariableStatement specifically
+  if (isVariableStatement(node)) {
+    // Check if the VariableStatement itself is exported
+    const isExportedStatement = node.modifiers?.some(
+      (mod) => mod.kind === SyntaxKind.ExportKeyword
+    );
+    if (isExportedStatement) {
+      // Assume all declarations in this statement are exported
+      return true;
+    }
+    // Otherwise, check each declaration
+    for (const declaration of node.declarationList.declarations) {
+      if (isIdentifier(declaration.name) && exportedNames.has(declaration.name.text)) {
+        console.log('Node EXPORTED', node.getText());
+        return true;
+      }
+    }
+  }
+  if (
+    isVariableDeclaration(node) ||
+    isFunctionDeclaration(node) ||
+    isClassDeclaration(node) ||
+    isInterfaceDeclaration(node) ||
+    isTypeAliasDeclaration(node) ||
+    isEnumDeclaration(node)
+  ) {
+    // Ensure the node is a NamedDeclaration
+    const namedNode = node as NamedDeclaration;
+    const nameNode = namedNode.name;
+
+    if (nameNode && isIdentifier(nameNode)) {
+      name = nameNode.text;
+    }
+  }
+
+  let flags = getCombinedModifierFlags(node as Declaration);
+
+  // For VariableDeclaration, modifiers are on the parent VariableStatement
+  if (isVariableDeclaration(node)) {
+    const variableStatement = node.parent.parent; // VariableDeclarationList -> VariableStatement
+    const parentFlags = getCombinedModifierFlags(variableStatement as unknown as Declaration);
+    flags |= parentFlags;
+  }
+
+  if (
+    (flags & ModifierFlags.Export) !== 0 ||
+    (flags & ModifierFlags.Public) !== 0 ||
+    (isClassDeclaration(node.parent) &&
+      [ModifierFlags.None, ModifierFlags.Static].includes(flags)) ||
+    (!!name && exportedNames.has(name))
+  ) {
+    console.log('Node EXPORTED', node.getText());
+  }
   return (
     (flags & ModifierFlags.Export) !== 0 ||
     (flags & ModifierFlags.Public) !== 0 ||
-    (isClassDeclaration(node.parent) && [ModifierFlags.None, ModifierFlags.Static].includes(flags))
+    (isClassDeclaration(node.parent) &&
+      [ModifierFlags.None, ModifierFlags.Static].includes(flags)) ||
+    (!!name && exportedNames.has(name))
   );
-};
+}
 
 /** Serialize a signature (call or construct) */
 const serializeSignature = ({
@@ -201,11 +329,16 @@ const visit = ({
   checker,
   node,
   types,
+  exportedNames,
   ...rest
-}: {checker: TypeChecker; node: Node} & Source &
+}: {
+  checker: TypeChecker;
+  node: Node;
+  exportedNames: Set<string>;
+} & Source &
   Required<Pick<BuildOptions, 'types'>>): DocEntry[] => {
   // // Only consider exported nodes
-  if (!isNodeExportedOrPublic(node)) {
+  if (!isNodeExportedOrPublic(node, exportedNames)) {
     return [];
   }
 
@@ -249,7 +382,7 @@ const visit = ({
       };
 
       const visitChild = (node: Node) => {
-        const docEntries: DocEntry[] = visit({node, checker, types, ...rest});
+        const docEntries: DocEntry[] = visit({node, checker, types, exportedNames, ...rest});
         // We do not need to repeat the file name for class members
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         classEntry.methods?.push(...docEntries.map(({fileName: _, ...rest}) => rest));
@@ -261,7 +394,7 @@ const visit = ({
     }
   } else if (isModuleDeclaration(node)) {
     const visitChild = (node: Node) => {
-      const docEntries: DocEntry[] = visit({node, checker, types, ...rest});
+      const docEntries: DocEntry[] = visit({node, checker, types, exportedNames, ...rest});
       entries.push(...docEntries);
     };
 
@@ -436,9 +569,20 @@ export const buildDocumentation = ({
 
   // Visit every sourceFile in the program
   for (const sourceFile of sourceFiles) {
+    // Collect exported nodes from the source file
+    const exportedNames = collectExportedNames(sourceFile);
+
+    console.log('exportedNames', exportedNames.values());
     // Walk the tree to search for classes
     forEachChild(sourceFile, (node: Node) => {
-      const entries: DocEntry[] = visit({checker, node, sourceFile, repo, types});
+      const entries: DocEntry[] = visit({
+        checker,
+        node,
+        sourceFile,
+        repo,
+        types,
+        exportedNames
+      });
       result.push(...entries);
     });
   }

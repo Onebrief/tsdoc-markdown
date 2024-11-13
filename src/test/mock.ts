@@ -3,12 +3,12 @@
  *
  * @param yolo this is a jsdoc
  */
-export const hello = (world: string): string => 'hello' + world;
+const hello = (world: string): string => 'hello' + world;
 
 /**
  * A constant
  */
-export const numberOne = 2;
+const numberOne = 2;
 
 /**
  * hello2
@@ -243,5 +243,7 @@ export interface StorageConfigRedirect {
 }
 
 export type SatelliteConfig = Either<SatelliteId, SatelliteIds> &
-    CliConfig &
-    SatelliteConfigOptions;
+  CliConfig &
+  SatelliteConfigOptions;
+
+export {hello, numberOne};
