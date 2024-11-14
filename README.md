@@ -12,7 +12,7 @@ Generates markdown documentation from TypeScript source code. Useful for generat
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 
-[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
 
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
@@ -130,60 +130,58 @@ generateDocumentation({
 
 ## :toolbox: Functions
 
-- [buildRunner](#gear-buildrunner)
-- [useCommandRunnerCallback](#gear-usecommandrunnercallback)
-- [useRunnableCommand](#gear-userunnablecommand)
+- [buildDocumentation](#gear-builddocumentation)
+- [documentationToMarkdown](#gear-documentationtomarkdown)
+- [generateDocumentation](#gear-generatedocumentation)
 
-### :gear: buildRunner
+### :gear: buildDocumentation
 
-Builds a command runner for the given command name and selection.
-The built runner will have its handler property set to a function that will
-execute all available commands for the given command name.
+Build the documentation entries for the selected sources.
 
-| Function | Type |
-| ---------- | ---------- |
-| `buildRunner` | `(name: CommandName, selection: SelectionKey[], arg: string or undefined, isReadOnlyUser: boolean) => RunnableCommandInternal` |
+| Function             | Type                                                                                                      |
+| -------------------- | --------------------------------------------------------------------------------------------------------- |
+| `buildDocumentation` | `({ inputFiles, options }: { inputFiles: string[]; options?: BuildOptions or undefined; }) => DocEntry[]` |
 
 Parameters:
 
-* `name`: The name of the command to build a runner for
-* `selection`: The current selection
-* `arg`: The argument to pass to the command
-* `isReadOnlyUser`: Whether the current user is read-only
+- `params.inputFiles`: The list of files to scan and for which the documentation should be build.
+- `params.options`: Optional compiler options to generate the docs
 
+[:link: Source](https://github.com/peterpeterparker/tsdoc-markdown/tree/main/src/lib/docs.ts#L398)
 
-### :gear: useCommandRunnerCallback
+### :gear: documentationToMarkdown
 
-A hook that returns a callback function that can be used to run a command.
+Convert the documentation entries to an opinionated Markdown format.
 
-| Function | Type |
-| ---------- | ---------- |
-| `useCommandRunnerCallback` | `(getSelection: () => SelectionKey[], isReadOnlyUser: boolean) => CommandRunner` |
-
-Parameters:
-
-* `getSelection`: a function to retreive the current selection
-* `isReadOnlyUser`: a flag to indicate if the current user is read-only
-
-
-### :gear: useRunnableCommand
-
-A hook that returns a runnable command object for the given command name and selection.
-
-| Function | Type |
-| ---------- | ---------- |
-| `useRunnableCommand` | `(currentSelection: SelectionKey[], name: CommandName, arg: string or undefined, isReadOnlyUser: boolean, selectionOverride?: SelectionKey[] or undefined) => RunnableCommand` |
+| Function                  | Type                                                                                                 |
+| ------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `documentationToMarkdown` | `({ entries, options }: { entries: DocEntry[]; options?: MarkdownOptions or undefined; }) => string` |
 
 Parameters:
 
-* `currentSelection`: the current selection as an array
-* `name`: the name of the command
-* `arg`: an optional argument to pass to the command
-* `isReadOnlyUser`: a flag to indicate if the current user is read-only
-* `selectionOverride`: an optional override to the currentSelection
+- `params.entries`: The entries of the documentation (functions, constants and classes).
+- `params.options`: Optional configuration to render the Markdown content. See `types.ts` for details.
 
+[:link: Source](https://github.com/peterpeterparker/tsdoc-markdown/tree/main/src/lib/markdown.ts#L277)
 
+### :gear: generateDocumentation
 
+Generate documentation and write output to a file.
+If the file exists, it will try to insert the docs between <!-- TSDOC_START --> and <!-- TSDOC_END --> comments.
+If these does not exist, the output file will be overwritten.
+
+| Function                | Type                                                                                                                                                                                                           |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `generateDocumentation` | `({ inputFiles, outputFile, markdownOptions, buildOptions }: { inputFiles: string[]; outputFile: string; markdownOptions?: MarkdownOptions or undefined; buildOptions?: BuildOptions or undefined; }) => void` |
+
+Parameters:
+
+- `params.inputFiles`: The list of files to scan for documentation. Absolute or relative path.
+- `params.outputFile`: The file to output the documentation in Markdown.
+- `params.markdownOptions`: Optional settings passed to the Markdown parser. See `MarkdownOptions` for details.
+- `params.buildOptions`: Options to construct the documentation tree. See `BuildOptions` for details.
+
+[:link: Source](https://github.com/peterpeterparker/tsdoc-markdown/tree/main/src/lib/index.ts#L26)
 
 <!-- TSDOC_END -->
 
@@ -206,6 +204,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://daviddalbusco.com/"><img src="https://avatars.githubusercontent.com/u/16886711?v=4?s=48" width="48px;" alt="David Dal Busco"/><br /><sub><b>David Dal Busco</b></sub></a><br /><a href="https://github.com/peterpeterparker/tsdoc-markdown/commits?author=peterpeterparker" title="Code">💻</a> <a href="https://github.com/peterpeterparker/tsdoc-markdown/commits?author=peterpeterparker" title="Documentation">📖</a> <a href="#example-peterpeterparker" title="Examples">💡</a> <a href="#ideas-peterpeterparker" title="Ideas, Planning, & Feedback">🤔</a> <a href="#maintenance-peterpeterparker" title="Maintenance">🚧</a> <a href="#projectManagement-peterpeterparker" title="Project Management">📆</a> <a href="#research-peterpeterparker" title="Research">🔬</a> <a href="https://github.com/peterpeterparker/tsdoc-markdown/pulls?q=is%3Apr+reviewed-by%3Apeterpeterparker" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/peterpeterparker/tsdoc-markdown/commits?author=peterpeterparker" title="Tests">⚠️</a> <a href="#tool-peterpeterparker" title="Tools">🔧</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://mia.cx/"><img src="https://avatars.githubusercontent.com/u/42698687?v=4?s=48" width="48px;" alt="Mia Riezebos"/><br /><sub><b>Mia Riezebos</b></sub></a><br /><a href="https://github.com/peterpeterparker/tsdoc-markdown/commits?author=mia-riezebos" title="Code">💻</a> <a href="#platform-mia-riezebos" title="Packaging/porting to new platform">📦</a> <a href="#research-mia-riezebos" title="Research">🔬</a> <a href="https://github.com/peterpeterparker/tsdoc-markdown/commits?author=mia-riezebos" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/mingtianyihou33"><img src="https://avatars.githubusercontent.com/u/22953606?v=4?s=48" width="48px;" alt="mingtianyihou"/><br /><sub><b>mingtianyihou</b></sub></a><br /><a href="https://github.com/peterpeterparker/tsdoc-markdown/commits?author=mingtianyihou33" title="Code">💻</a> <a href="https://github.com/peterpeterparker/tsdoc-markdown/commits?author=mingtianyihou33" title="Tests">⚠️</a> <a href="#ideas-mingtianyihou33" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jordancardwell"><img src="https://avatars.githubusercontent.com/u/636339?v=4?s=48" width="48px;" alt="Jordan"/><br /><sub><b>Jordan</b></sub></a><br /><a href="https://github.com/peterpeterparker/tsdoc-markdown/commits?author=jordancardwell" title="Code">💻</a> <a href="https://github.com/peterpeterparker/tsdoc-markdown/commits?author=jordancardwell" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
 </table>
