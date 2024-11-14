@@ -165,31 +165,8 @@ function collectExportedNames(sourceFile: SourceFile): Set<string> {
   return exportedNames;
 }
 
-/** True if this is visible outside this file, false otherwise */
-// const isNodeExportedOrPublic = (node: Node, exportedNodes: Set<Node>): boolean => {
-//   const flags = getCombinedModifierFlags(node as Declaration);
-
-//   // if (
-//   //   (flags & ModifierFlags.Export) !== 0 ||
-//   //   (flags & ModifierFlags.Public) !== 0 ||
-//   //   (isClassDeclaration(node.parent) && [ModifierFlags.None, ModifierFlags.Static].includes(flags))
-//   // ) {
-//   //   return true;
-//   // }
-
-//   if (exportedNodes.has(node)) {
-//     console.log('Node INDEED exported', node.getText());
-//     return true;
-//   }
-
-//   console.log('Node NOT exported', node.getText());
-//   return false;
-// };
-
 function isNodeExportedOrPublic(node: Node, exportedNames: Set<string>): boolean {
   let name: string | undefined;
-  console.log('CHECKING', node.getText());
-  // Handle VariableStatement specifically
   if (isVariableStatement(node)) {
     // Check if the VariableStatement itself is exported
     const isExportedStatement = node.modifiers?.some(
@@ -202,7 +179,6 @@ function isNodeExportedOrPublic(node: Node, exportedNames: Set<string>): boolean
     // Otherwise, check each declaration
     for (const declaration of node.declarationList.declarations) {
       if (isIdentifier(declaration.name) && exportedNames.has(declaration.name.text)) {
-        console.log('Node EXPORTED', node.getText());
         return true;
       }
     }
@@ -233,15 +209,6 @@ function isNodeExportedOrPublic(node: Node, exportedNames: Set<string>): boolean
     flags |= parentFlags;
   }
 
-  if (
-    (flags & ModifierFlags.Export) !== 0 ||
-    (flags & ModifierFlags.Public) !== 0 ||
-    (isClassDeclaration(node.parent) &&
-      [ModifierFlags.None, ModifierFlags.Static].includes(flags)) ||
-    (!!name && exportedNames.has(name))
-  ) {
-    console.log('Node EXPORTED', node.getText());
-  }
   return (
     (flags & ModifierFlags.Export) !== 0 ||
     (flags & ModifierFlags.Public) !== 0 ||
@@ -572,7 +539,6 @@ export const buildDocumentation = ({
     // Collect exported nodes from the source file
     const exportedNames = collectExportedNames(sourceFile);
 
-    console.log('exportedNames', exportedNames.values());
     // Walk the tree to search for classes
     forEachChild(sourceFile, (node: Node) => {
       const entries: DocEntry[] = visit({
