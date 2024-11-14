@@ -3,12 +3,12 @@
  *
  * @param yolo this is a jsdoc
  */
-export const hello = (world: string): string => 'hello' + world;
+const hello = (world: string): string => 'hello' + world;
 
 /**
  * A constant
  */
-export const numberOne = 2;
+const numberOne = 2;
 
 /**
  * hello2
@@ -145,7 +145,7 @@ export type yolo = 'string';
 /**
  * A type yolo
  */
-export type Abc = Foo & {hello: string};
+type Abc = Foo & {hello: string};
 
 export enum Time {
   SECOND = 1000,
@@ -243,5 +243,8 @@ export interface StorageConfigRedirect {
 }
 
 export type SatelliteConfig = Either<SatelliteId, SatelliteIds> &
-    CliConfig &
-    SatelliteConfigOptions;
+  CliConfig &
+  SatelliteConfigOptions;
+
+export {hello, numberOne};
+export type {Abc};

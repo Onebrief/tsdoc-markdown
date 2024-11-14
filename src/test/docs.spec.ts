@@ -30,4 +30,24 @@ describe('docs', () => {
       url: 'https://github.com/peterpeterparker/tsdoc-markdown/tree/main/src/test/mock.ts#L6'
     });
   });
+
+  describe('bulk exports', () => {
+    const doc = buildDocumentation({
+      inputFiles: ['./src/test/mock.ts'],
+      options: {
+        repo: {
+          url: 'https://github.com/peterpeterparker/tsdoc-markdown/'
+        },
+        types: true
+      }
+    });
+
+    it.each([['hello'], ['numberOne'], ['Abc']])(
+      'should include bulk exported item: %s',
+      (name) => {
+        const item = doc.find((item) => item.name === name);
+        expect(item).toBeDefined();
+      }
+    );
+  });
 });

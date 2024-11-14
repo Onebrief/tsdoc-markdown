@@ -12,7 +12,7 @@ Generates markdown documentation from TypeScript source code. Useful for generat
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 
-[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
 
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
@@ -147,7 +147,7 @@ Parameters:
 - `params.inputFiles`: The list of files to scan and for which the documentation should be build.
 - `params.options`: Optional compiler options to generate the docs
 
-[:link: Source](https://github.com/peterpeterparker/tsdoc-markdown/tree/main/src/lib/docs.ts#L398)
+[:link: Source](https://github.com/peterpeterparker/tsdoc-markdown/tree/main/src/lib/docs.ts#L498)
 
 ### :gear: documentationToMarkdown
 
@@ -204,6 +204,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://daviddalbusco.com/"><img src="https://avatars.githubusercontent.com/u/16886711?v=4?s=48" width="48px;" alt="David Dal Busco"/><br /><sub><b>David Dal Busco</b></sub></a><br /><a href="https://github.com/peterpeterparker/tsdoc-markdown/commits?author=peterpeterparker" title="Code">💻</a> <a href="https://github.com/peterpeterparker/tsdoc-markdown/commits?author=peterpeterparker" title="Documentation">📖</a> <a href="#example-peterpeterparker" title="Examples">💡</a> <a href="#ideas-peterpeterparker" title="Ideas, Planning, & Feedback">🤔</a> <a href="#maintenance-peterpeterparker" title="Maintenance">🚧</a> <a href="#projectManagement-peterpeterparker" title="Project Management">📆</a> <a href="#research-peterpeterparker" title="Research">🔬</a> <a href="https://github.com/peterpeterparker/tsdoc-markdown/pulls?q=is%3Apr+reviewed-by%3Apeterpeterparker" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/peterpeterparker/tsdoc-markdown/commits?author=peterpeterparker" title="Tests">⚠️</a> <a href="#tool-peterpeterparker" title="Tools">🔧</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://mia.cx/"><img src="https://avatars.githubusercontent.com/u/42698687?v=4?s=48" width="48px;" alt="Mia Riezebos"/><br /><sub><b>Mia Riezebos</b></sub></a><br /><a href="https://github.com/peterpeterparker/tsdoc-markdown/commits?author=mia-riezebos" title="Code">💻</a> <a href="#platform-mia-riezebos" title="Packaging/porting to new platform">📦</a> <a href="#research-mia-riezebos" title="Research">🔬</a> <a href="https://github.com/peterpeterparker/tsdoc-markdown/commits?author=mia-riezebos" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/mingtianyihou33"><img src="https://avatars.githubusercontent.com/u/22953606?v=4?s=48" width="48px;" alt="mingtianyihou"/><br /><sub><b>mingtianyihou</b></sub></a><br /><a href="https://github.com/peterpeterparker/tsdoc-markdown/commits?author=mingtianyihou33" title="Code">💻</a> <a href="https://github.com/peterpeterparker/tsdoc-markdown/commits?author=mingtianyihou33" title="Tests">⚠️</a> <a href="#ideas-mingtianyihou33" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jordancardwell"><img src="https://avatars.githubusercontent.com/u/636339?v=4?s=48" width="48px;" alt="Jordan"/><br /><sub><b>Jordan</b></sub></a><br /><a href="https://github.com/peterpeterparker/tsdoc-markdown/commits?author=jordancardwell" title="Code">💻</a> <a href="https://github.com/peterpeterparker/tsdoc-markdown/commits?author=jordancardwell" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
 </table>

@@ -134,6 +134,23 @@
                 "kind": "text"
               }
             ]
+          },
+          {
+            "name": "param",
+            "text": [
+              {
+                "text": "params.canisterId",
+                "kind": "parameterName"
+              },
+              {
+                "text": " ",
+                "kind": "space"
+              },
+              {
+                "text": "An optional canisterId",
+                "kind": "text"
+              }
+            ]
           }
         ],
         "doc_type": "method"
@@ -148,6 +165,23 @@
             "text": [
               {
                 "text": "params",
+                "kind": "text"
+              }
+            ]
+          },
+          {
+            "name": "param",
+            "text": [
+              {
+                "text": "params.certified",
+                "kind": "parameterName"
+              },
+              {
+                "text": " ",
+                "kind": "space"
+              },
+              {
+                "text": "Update calls?",
                 "kind": "text"
               }
             ]
@@ -204,6 +238,23 @@
             "text": [
               {
                 "text": "params",
+                "kind": "text"
+              }
+            ]
+          },
+          {
+            "name": "param",
+            "text": [
+              {
+                "text": "params.canisterId",
+                "kind": "parameterName"
+              },
+              {
+                "text": " ",
+                "kind": "space"
+              },
+              {
+                "text": "An optional canisterId",
                 "kind": "text"
               }
             ]
@@ -452,7 +503,7 @@
   {
     "name": "SatelliteConfig",
     "documentation": "",
-    "type": "Either<SatelliteId, SatelliteIds> &\n    CliConfig &\n    SatelliteConfigOptions",
+    "type": "Either<SatelliteId, SatelliteIds> &\n  CliConfig &\n  SatelliteConfigOptions",
     "jsDocs": [],
     "doc_type": "type",
     "fileName": "src/test/mock.ts"

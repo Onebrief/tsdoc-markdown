@@ -17,7 +17,6 @@ describe('markdown', () => {
       entries: doc
     });
     const expectedDoc = readFileSync('./src/test/mock.md', 'utf8').replace(/\r\n/g, '\n');
-
     expect(markdown).toEqual(expectedDoc);
   });
 

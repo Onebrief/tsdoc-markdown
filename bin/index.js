@@ -38,6 +38,10 @@ const outputFile =
 
 const repoUrl = process.argv.find((arg) => arg.indexOf('--repo=') > -1)?.replace('--repo=', '');
 
+const repoBranch = process.argv
+  .find((arg) => arg.indexOf('--repoBranch=') > -1)
+  ?.replace('--repoBranch=', '');
+
 const types = process.argv.find((arg) => arg.indexOf('--types') > -1) !== undefined;
 
 if (!inputFiles || inputFiles.length === 0) {
@@ -47,12 +51,13 @@ if (!inputFiles || inputFiles.length === 0) {
 generateDocumentation({
   inputFiles,
   outputFile,
-  ...(repoUrl !== undefined && {
-    buildOptions: {
+  buildOptions: {
+    ...(repoUrl !== undefined && {
       repo: {
-        url: repoUrl
-      },
-      types
-    }
-  })
+        url: repoUrl,
+        branch: repoBranch
+      }
+    }),
+    types
+  }
 });

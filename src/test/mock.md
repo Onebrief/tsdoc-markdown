@@ -134,6 +134,11 @@ Create a LedgerCanister
 | ---------- | ---------- |
 | `create` | `(options: { canisterId?: string or undefined; }) => LedgerCanister` |
 
+Parameters:
+
+* `params.canisterId`: An optional canisterId
+
+
 [:link: Source](https://github.com/peterpeterparker/tsdoc-markdown/tree/main/src/test/mock.ts#L55)
 
 #### :gear: accountBalance
@@ -143,6 +148,11 @@ Returns the balance of the specified account identifier.
 | Method | Type |
 | ---------- | ---------- |
 | `accountBalance` | `({ certified }: { certified?: boolean or undefined; }) => Promise<{ icp: bigint; }>` |
+
+Parameters:
+
+* `params.certified`: Update calls?
+
 
 [:link: Source](https://github.com/peterpeterparker/tsdoc-markdown/tree/main/src/test/mock.ts#L69)
 
@@ -169,6 +179,11 @@ This create function is public as well.
 | Method | Type |
 | ---------- | ---------- |
 | `create` | `(options: { canisterId?: string or undefined; }) => SnsLedgerCanister` |
+
+Parameters:
+
+* `params.canisterId`: An optional canisterId
+
 
 [:link: Source](https://github.com/peterpeterparker/tsdoc-markdown/tree/main/src/test/mock.ts#L101)
 
