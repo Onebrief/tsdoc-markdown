@@ -145,7 +145,7 @@ export type yolo = 'string';
 /**
  * A type yolo
  */
-export type Abc = Foo & {hello: string};
+type Abc = Foo & {hello: string};
 
 export enum Time {
   SECOND = 1000,
@@ -247,3 +247,4 @@ export type SatelliteConfig = Either<SatelliteId, SatelliteIds> &
   SatelliteConfigOptions;
 
 export {hello, numberOne};
+export type {Abc};

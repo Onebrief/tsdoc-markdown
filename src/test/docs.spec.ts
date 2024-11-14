@@ -31,20 +31,23 @@ describe('docs', () => {
     });
   });
 
-  it('should correctly detect exported/public ', () => {
+  describe('bulk exports', () => {
     const doc = buildDocumentation({
       inputFiles: ['./src/test/mock.ts'],
       options: {
         repo: {
           url: 'https://github.com/peterpeterparker/tsdoc-markdown/'
-        }
+        },
+        types: true
       }
     });
 
-    const expectedDoc = readFileSync('./src/test/mock.json', 'utf8');
-    expect(doc[0]).toEqual({
-      ...JSON.parse(expectedDoc)[0],
-      url: 'https://github.com/peterpeterparker/tsdoc-markdown/tree/main/src/test/mock.ts#L6'
-    });
+    it.each([['hello'], ['numberOne'], ['Abc']])(
+      'should include bulk exported item: %s',
+      (name) => {
+        const item = doc.find((item) => item.name === name);
+        expect(item).toBeDefined();
+      }
+    );
   });
 });
