@@ -57,8 +57,10 @@ export interface MarkdownOptions {
 }
 
 export interface RepoOptions {
+  type?: string;
   url: string;
   // Default: "main" branch
+  directory?: string;
   branch?: string;
 }
 
@@ -71,7 +73,7 @@ export interface BuildOptions {
   // `false` per default to limit the scope of the documentation to the input files only. If turns to `true`, all files of the program will be analyzed to generate the documentation.
   explore?: boolean;
   // If provided, the Markdown parser will generate links to the documented source code
-  repo?: RepoOptions;
+  repo?: RepoOptions | string;
   // Documentation for Interfaces and Types is not generated per default. Set to true to include those.
   types?: boolean;
 }

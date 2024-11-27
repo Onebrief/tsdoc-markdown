@@ -1,3 +1,4 @@
+import hostedGitInfo from 'hosted-git-info';
 import {relative, resolve} from 'path/posix';
 import type {
   ArrowFunction,
@@ -40,7 +41,7 @@ import {
   ScriptTarget,
   SyntaxKind
 } from 'typescript';
-import type {BuildOptions, DocEntry, DocEntryConstructor, DocEntryType} from './types';
+import type {BuildOptions, DocEntry, DocEntryConstructor, DocEntryType, RepoOptions} from './types';
 
 /** Serialize a symbol into a json object */
 const serializeSymbol = ({
@@ -466,24 +467,83 @@ const buildSource = ({
 }: Source & {node: Node}): Pick<DocEntry, 'url' | 'fileName'> => {
   const fileName = sourceFile.fileName;
 
-  if (repo === undefined) {
-    return {fileName};
-  }
-
-  const {url: repoUrl, branch} = repo;
+  if (repo === undefined) return {fileName};
 
   const {line} = sourceFile.getLineAndCharacterOfPosition(node.getStart());
   const filePath = relative(process.cwd(), sourceFile.fileName);
 
-  const url = `${repoUrl.replace(/\/+$/, '')}/tree/${branch ?? 'main'}/${filePath.replace(
-    /^\.\.\//,
-    ''
-  )}#L${line + 1}`;
+  let url = '';
+
+  if (typeof repo === 'string') {
+    const hgi = hostedGitInfo.fromUrl(repo);
+
+    switch (hgi?.type) {
+      case 'github':
+        url = generateGithubViewUrl(filePath, line, {url: hgi.browse()});
+        break;
+      case 'gitlab':
+        url = generateGitlabViewUrl(filePath, line, {url: hgi.browse()});
+        break;
+      case 'bitbucket':
+        url = generateBitbucketViewUrl(filePath, line, {url: hgi.browse()});
+        break;
+      case 'gist':
+        // Not supported
+        break;
+    }
+  }
+
+  if (typeof repo === 'object') {
+    const {url: repoUrl} = repo;
+
+    const hgi = hostedGitInfo.fromUrl(repoUrl);
+
+    switch (hgi?.type) {
+      case 'github':
+        url = generateGithubViewUrl(filePath, line, {...repo, url: hgi.browse()});
+        break;
+      case 'gitlab':
+        url = generateGitlabViewUrl(filePath, line, {...repo, url: hgi.browse()});
+        break;
+      case 'bitbucket':
+        url = generateBitbucketViewUrl(filePath, line, {...repo, url: hgi.browse()});
+        break;
+    }
+  }
+
+  if (url === '') return {fileName};
 
   return {
     fileName,
     url
   };
+};
+
+const generateGithubViewUrl = (filePath: string, line: number, options: RepoOptions): string => {
+  const {url, directory, branch} = options;
+
+  return `${url.replace(/\/+$/, '')}/tree/${branch ?? 'main'}/${directory ? directory.replace(/\/?$/, '/') : ''}${filePath.replace(
+    /^\.\.\//,
+    ''
+  )}#L${line + 1}`;
+};
+
+const generateGitlabViewUrl = (filePath: string, line: number, options: RepoOptions): string => {
+  const {url, directory, branch} = options;
+
+  return `${url.replace(/\/+$/, '')}/-/blob/${branch ?? 'main'}/${directory ? directory.replace(/\/?$/, '/') : ''}${filePath.replace(
+    /^\.\.\//,
+    ''
+  )}#L${line + 1}`;
+};
+
+const generateBitbucketViewUrl = (filePath: string, line: number, options: RepoOptions): string => {
+  const {url, directory, branch} = options;
+
+  return `${url.replace(/\/+$/, '')}/src/${branch ?? 'main'}/${directory ? directory.replace(/\/?$/, '/') : ''}${filePath.replace(
+    /^\.\.\//,
+    ''
+  )}#lines-${line + 1}`;
 };
 
 /**
