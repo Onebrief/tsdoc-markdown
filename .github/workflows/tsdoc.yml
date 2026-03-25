@@ -10,8 +10,13 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
 
       - name: Install dependencies
         run: npm ci
@@ -20,7 +25,7 @@ jobs:
         run: npm run docs
 
       - name: Commit docs
-        uses: EndBug/add-and-commit@v9
+        uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9.1.4
         # We don't want to commit documentation changes to main
         if: ${{ github.ref != 'refs/heads/main' }}
         with:
